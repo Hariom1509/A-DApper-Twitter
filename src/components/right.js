@@ -1,5 +1,7 @@
 import React from "react";
 import './right.css';
+import { Input } from "web3uikit";
+import { Search } from "web3uikit";
 
 
 const right = () => {
@@ -28,6 +30,28 @@ const right = () => {
 
   return (
     <>
+    <div className="rightbarContent">
+      <Input
+        label="Search Twitter"
+        name ="Search Twitter"
+        labelBgColor="#141d26" 
+        >
+      </Input>
+
+    <div className="trends">
+      News For You
+      {trends.map((e) => {
+          return(
+            <>
+            <div className="trend" onClick={() => window.open(e.link)}>
+              <div className="trendText">{e.text}</div>
+            </div>
+            </>
+          )
+      })}
+    </div>
+
+    </div>
     </>
   );
 };
