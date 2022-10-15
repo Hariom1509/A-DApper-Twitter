@@ -1,59 +1,59 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.7.0 <0.9.0;
 
-contract tweets {
+contract twitter {
 
     address public account;
-    uint256 private counter;
+    uint256 private twtnum;
 
     constructor() 
     {
-        counter = 0;
+        twtnum = 0;
         account = msg.sender;
      }
 
-    struct tweet 
+    struct twt 
     {
-        address tweeter;
+        address owner;
         uint256 id;
-        string tweetTxt;
-        string tweetImg;
+        string text;
+        string img;
     }
 
-    event tweetCreated 
+    event create 
     (
-        address tweeter,
+        address owner,
         uint256 id,
-        string tweetTxt,
-        string tweetImg
+        string text,
+        string img
     );
 
-    mapping(uint256 => tweet) Tweets;
+    mapping(uint256 => twt) twitter;
 
-    function addTweet( string memory tweetTxt, string memory tweetImg ) public payable 
+    function addTwt( string memory text, string memory img ) public payable 
     {
-        require(msg.value == (1 ether), "Submit 1 Matic Ether!");
-        tweet storage newTweet = Tweets[counter];
-        newTweet.tweetTxt = tweetTxt;
-        newTweet.tweetImg = tweetImg;
-        newTweet.tweeter = msg.sender;
-        newTweet.id = counter;
-        emit tweetCreated
+        require(msg.value == (1 ether), "Submit 1 token!");
+        twt storage newTwt = twitter[twtnum];
+        newTwt.text = text;
+        newTwt.img = img;
+        newTwt.owner = msg.sender;
+        newTwt.id = twtnum;
+        emit create
         (
             msg.sender, 
-            counter, 
-            tweetTxt, 
-            tweetImg
+            twtnum, 
+            text, 
+            img
         );
-        counter++;
+        twtnum++;
         payable(account).transfer(msg.value);
     }
 
-    function getTweet(uint256 id) public view returns (string memory, string memory, address)
+    function getTwt(uint256 id) public view returns (string memory, string memory, address)
     {
-        require(id < counter, "Hmmm... This tweet does not exist!!");
+        require(id < twtnum, "404! Tweet Not Found");
 
-        tweet storage t = Tweets[id];
-        return (t.tweetTxt, t.tweetImg, t.tweeter);
+        twt storage t = twitter[id];
+        return (t.text, t.img, t.owner);
     }
 }
