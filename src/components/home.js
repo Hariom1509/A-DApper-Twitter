@@ -1,8 +1,8 @@
 import React from "react";
 import "./home.css";
-import { TextArea, Matic, Image } from "web3uikit";
+import { TextArea, Image, Matic } from "web3uikit";
 import { useState, useRef } from "react";
-import Center from "../components/center";
+import Center from "./center";
 import { useMoralis, useWeb3ExecuteFunction } from "react-moralis";
 
 const Home = () => {
@@ -132,12 +132,12 @@ const Home = () => {
                   onChange={changeHandler}
                   style={{ display: "none"}}
                 />
-                <Image />
+                <Image fill="#1DA1F2" size={20} />
               </div>
               <div className="tweetOptions">
                 <div className="tweet" onClick={saveTweet}>Tweet</div>
                 <div className="tweet" onClick={maticTweet} style={{ backgroundColor: "#8247e5" }}>
-                  <Matic />
+                  <Matic fill="#ffffff" size={20} />
                 </div>
               </div>
             </div>
