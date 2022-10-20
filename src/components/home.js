@@ -31,26 +31,106 @@ const Home = () => {
     }
 
     let options = {
-      contractAddress: "0x8E452D8573e2B1e8341D3f4aCC07939247cf99c6",
-      functionName: "addTweet",
-      abi: [{
-        "inputs": [
-          {
-            "internalType": "string",
-            "name": "tweetTxt",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "tweetImg",
-            "type": "string"
-          }
-        ],
-        "name": "addTweet",
-        "outputs": [],
-        "stateMutability": "payable",
-        "type": "function"
-      }],
+      contractAddress: "0xA5eDcFccfD6b8A197aB31CfA3c234Ad3bcB9c294",
+      functionName: "addTwt",
+      abi: [
+        {
+            "inputs": [],
+            "stateMutability": "nonpayable",
+            "type": "constructor"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "internalType": "address",
+                    "name": "owner",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "id",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "string",
+                    "name": "text",
+                    "type": "string"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "string",
+                    "name": "img",
+                    "type": "string"
+                }
+            ],
+            "name": "create",
+            "type": "event"
+        },
+        {
+            "inputs": [],
+            "name": "account",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "string",
+                    "name": "text",
+                    "type": "string"
+                },
+                {
+                    "internalType": "string",
+                    "name": "img",
+                    "type": "string"
+                }
+            ],
+            "name": "addTwt",
+            "outputs": [],
+            "stateMutability": "payable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "id",
+                    "type": "uint256"
+                }
+            ],
+            "name": "getTwt",
+            "outputs": [
+                {
+                    "internalType": "string",
+                    "name": "",
+                    "type": "string"
+                },
+                {
+                    "internalType": "string",
+                    "name": "",
+                    "type": "string"
+                },
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        }
+    ],
       params: {
         tweetTxt: tweet,
         tweetImg: img,
