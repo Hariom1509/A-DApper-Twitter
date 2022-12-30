@@ -1,77 +1,119 @@
-import React from "react";
-import "./center.css";
-import { MessageCircle, Matic, Star } from "web3uikit";
-import { useMoralis } from "react-moralis";
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import Box from "./Box";
+import Tweets from "./Tweets";
+import "./Center.css";
+import FlipMove from "react-flip-move";
+import axios from 'axios';
+import { TwitterDeployAddress } from './config.js';
+import {ethers} from 'ethers';
+import Twitter from './utils/Twitter.json'
 
-const Center = ({ profile }) => {
-  const [tweetArr, setTweetArr] = useState();
-  const { Moralis, account } = useMoralis();
 
-  useEffect(() => {
-    async function getTweets() {
-      try {
-        const Tweets = Moralis.Object.extend("Tweets");
-        const query = new Moralis.Query(Tweets);
-        if (profile) {
-          query.equalTo("tweeterAcc", account);
-        }
-        const results = await query.find();
+function Center({personal}) {
+  const [posts, setPosts] = useState([]);
 
-        setTweetArr(results);
-        console.log(results);
-      } catch (error) {
-        console.error(error);
+  const getUpdatedTweets = (allTweets, address) => {
+    let updatedTweets = [];
+    // Here we set a personal flag around the tweets
+    for(let i=0; i<allTweets.length; i++) {
+      if(allTweets[i].uname.toLowerCase() == address.toLowerCase()) {
+        let tweet = {
+          'id': allTweets[i].id,
+          'text': allTweets[i].text,
+          'deleted': allTweets[i].deleted,
+          'uname': allTweets[i].uname,
+          'personal': true
+        };
+        updatedTweets.push(tweet);
+      } else {
+        let tweet = {
+          'id': allTweets[i].id,
+          'text': allTweets[i].text,
+          'deleted': allTweets[i].deleted,
+          'uname': allTweets[i].uname,
+          'personal': false
+        };
+        updatedTweets.push(tweet);
       }
     }
-    getTweets();
-  }, [profile]);
+    return updatedTweets;
+  }
+
+  const getAllTweets = async() => {
+    try {
+      const {ethereum} = window
+
+      if(ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const TwitterContract = new ethers.Contract(
+          TwitterDeployAddress,
+          Twitter.abi,
+          signer
+        )
+
+        let allTweets = await TwitterContract.getTweets();
+        setPosts(getUpdatedTweets(allTweets, ethereum.selectedAddress));
+      } else {
+        console.log("Ethereum object doesn't exist");
+      }
+    } catch(error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    getAllTweets();
+  }, []);
+
+  const deleteTweet = key => async() => {
+    console.log(key);
+
+   try {
+      const {ethereum} = window
+
+      if(ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const TwitterContract = new ethers.Contract(
+          TwitterDeployAddress,
+          Twitter.abi,
+          signer
+        );
+
+        let deleteTweetTx = await TwitterContract.deleteTweet(key, true);
+        let allTweets = await TwitterContract.getTweets();
+        setPosts(getUpdatedTweets(allTweets, ethereum.selectedAddress));
+      } else {
+        console.log("Ethereum object doesn't exist");
+      }
+
+    } catch(error) {
+      console.log(error);
+    }
+  }
 
   return (
-    <>
-      {tweetArr?.map((e) => {
-        return (
-          <>
-            <div className="feedTweet">
-              <div className="completeTweet">
-                <div className="who">
-                {e.attributes.tweeterUserName.slice(0, 6)}
-                  <div className="accWhen">{
-                        `${e.attributes.tweeterAcc.slice(0, 4)}...${e.attributes.tweeterAcc.slice(38)} · 
-                        ${e.attributes.createdAt.toLocaleString('en-us', { month: 'short' })}  
-                        ${e.attributes.createdAt.toLocaleString('en-us', { day: 'numeric' })}
-                        `  
-                      }
-                      </div>
-                </div>
-                <div className="tweetContent">
-                {e.attributes.tweetTxt}
-                {e.attributes.tweetImg && (
-                        <img
-                          src={e.attributes.tweetImg}
-                          className="tweetImg"
-                        ></img>
-                      )}
-                </div>
-                <div className="interactions">
-                  <div className="interactionNums">
-                    <MessageCircle fill="#3f3f3f" size={20} />
-                  </div>
-                  <div className="interactionNums">
-                    <Star fill="#3f3f3f" size={20} />
-                    12
-                  </div>
-                  <div className="interactionNums">
-                    <Matic fill="#3f3f3f" size={20} />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </>
-        );
-      }).reverse()}
-    </>
+    <div className="feed">
+      <div className="feed__header">
+        <h2>Home</h2>
+      </div>
+
+      <Box />
+
+      <FlipMove>
+        {posts.map((post) => (
+          <Tweets
+            key={post.id}
+            displayName={post.uname}
+            text={post.text}
+            personal={post.personal}
+            onClick={deleteTweet(post.id)}
+          />
+        ))}
+      </FlipMove>
+    </div>
   );
-};
+}
 
 export default Center;
